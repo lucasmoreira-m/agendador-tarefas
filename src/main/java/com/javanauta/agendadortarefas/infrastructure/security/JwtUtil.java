@@ -1,5 +1,9 @@
 package com.javanauta.agendadortarefas.infrastructure.security;
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> master
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -25,7 +29,10 @@ public class JwtUtil {
     }
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> master
     // Extrai as claims do token JWT (informações adicionais do token)
     public Claims extractClaims(String token) {
         return Jwts.parser()
