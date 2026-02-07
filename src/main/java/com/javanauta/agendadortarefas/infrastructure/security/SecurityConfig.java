@@ -23,6 +23,7 @@ public class SecurityConfig {
     // O @Lazy aqui impede que o Spring tente carregar todo o contexto
     // de uma vez, quebrando o ciclo de dependência.
     public SecurityConfig(@Lazy JwtRequestFilter jwtRequestFilter) {
+
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
@@ -34,6 +35,10 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Necessário para o console do H2
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
+                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
+
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -42,6 +47,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
 }

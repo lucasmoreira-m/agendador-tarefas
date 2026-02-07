@@ -1,13 +1,12 @@
 package com.javanauta.agendadortarefas.infrastructure.client;
 
-import com.javanauta.agendadortarefas.infrastructure.business.dto.UsuarioDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
+import com.javanauta.agendadortarefas.business.dto.UsuarioDTO; // Verifique se este import está correto
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name= "usuario",url = "${usuario.url}")
+@FeignClient(name = "usuario", url = "${usuario.url}")
 public interface UsuarioClient {
 
     @GetMapping("/usuario")

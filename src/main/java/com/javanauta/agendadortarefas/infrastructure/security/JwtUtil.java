@@ -1,5 +1,7 @@
 package com.javanauta.agendadortarefas.infrastructure.security;
 
+
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -28,11 +30,12 @@ public class JwtUtil {
 
     // Extrai as claims do token JWT (informações adicionais do token)
     public Claims extractClaims(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()      // Use parserBuilder() em vez de parser()
                 .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token) // Analisa o token JWT e obtém as claims
-                .getBody(); // Retorna o corpo das claims
+                .build()                 // Agora o .build() vai funcionar!
+                .parseClaimsJws(token)
+                .getBody();
+
     }
 
     // Extrai o nome de usuário do token JWT
