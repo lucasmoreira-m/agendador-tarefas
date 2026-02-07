@@ -3,12 +3,7 @@ package com.javanauta.agendadortarefas.infrastructure.business.dto;
 import lombok.*;
 
 import java.util.List;
-
-public class UsuarioDTO {
-    package com.javanauta.agendadortarefas.business.DTO;
-
 import lombok.*;
-
 import java.util.List;
 
     @Getter
@@ -23,4 +18,4 @@ import java.util.List;
 
     }
 
-}
+
