@@ -1,7 +1,5 @@
 package com.javanauta.agendadortarefas.infrastructure.security;
 
-
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,50 +9,48 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.function.Function;
 
 @Service
 public class JwtUtil {
 
-    // Agora ele lê do application.properties.
-    // Se não encontrar, usa a string longa depois do ":" como padrão.
     @Value("${jwt.secret:9a4f2c8d3e1f5a6b7c8d9e0f1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t}")
     private String secret;
 
-    // Método auxiliar para gerar a chave segura a partir da String
     private SecretKey getSigningKey() {
+        // Para JJWT 0.12+, a chave deve ter pelo menos 256 bits (32 bytes)
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
-
-    // Extrai as claims do token JWT (informações adicionais do token)
-    public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()      // Use parserBuilder() em vez de parser()
-                .setSigningKey(getSigningKey())
-                .build()                 // Agora o .build() vai funcionar!
-                .parseClaimsJws(token)
-                .getBody();
-
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey()) // Corrigido de .erifyWith para .verifyWith
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    // Extrai o nome de usuário do token JWT
+    // Método genérico para extrair qualquer claim (boa prática)
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
     public String extrairEmailToken(String token) {
-        // Obtém o assunto (nome de usuário) das claims do token
-        return extractClaims(token).getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
 
-    // Verifica se o token JWT está expirado
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
     public boolean isTokenExpired(String token) {
-        // Compara a data de expiração do token com a data atual
-        return extractClaims(token).getExpiration().before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
-    // Valida o token JWT verificando o nome de usuário e se o token não está expirado
-    public boolean validateToken(String token, String username) {
-        // Extrai o nome de usuário do token
-        final String extractedUsername = extrairEmailToken(token);
-        // Verifica se o nome de usuário do token corresponde ao fornecido e se o token não está expirado
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public boolean validateToken(String token, String email) {
+        final String extractedEmail = extrairEmailToken(token);
+        return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
 }
